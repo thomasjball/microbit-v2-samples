@@ -1,5 +1,5 @@
-find_program(ARM_NONE_EABI_RANLIB arm-none-eabi-ranlib)
-find_program(ARM_NONE_EABI_AR arm-none-eabi-ar)
+find_program(ARM_NONE_EABI_RANLIB arm-none-eabi-gcc-ranlib)
+find_program(ARM_NONE_EABI_AR arm-none-eabi-gcc-ar)
 find_program(ARM_NONE_EABI_GCC arm-none-eabi-gcc)
 find_program(ARM_NONE_EABI_GPP arm-none-eabi-g++)
 find_program(ARM_NONE_EABI_OBJCOPY arm-none-eabi-objcopy)
