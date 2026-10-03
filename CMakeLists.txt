@@ -139,6 +139,22 @@ if("${device.definitions}" STRGREATER "")
     add_definitions("${device.definitions}")
 endif()
 
+###################
+
+# Check if the toolchain supports Interprocedural Optimization (LTO)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported OUTPUT error)
+
+if(ipo_supported)
+    # Enable LTO globally for all targets
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    message(STATUS "Link-Time Optimization (LTO/IPO) enabled successfully!")
+else()
+    message(WARNING "LTO/IPO is not supported by the toolchain: ${error}")
+endif()
+
+
 ####################
 # optional JSON flags for compilation + assembly
 ###################
