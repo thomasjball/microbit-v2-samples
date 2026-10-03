@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.9)
 
 # include additional cmake
 include(utils/cmake/JSONParser.cmake)
@@ -138,6 +138,24 @@ endforeach()
 if("${device.definitions}" STRGREATER "")
     add_definitions("${device.definitions}")
 endif()
+
+###################
+
+# Check if the toolchain supports Interprocedural Optimization (LTO)
+
+# The check_ipo_supported probe links a bare executable, which fails on bare-metal
+# ARM (missing _exit etc.), so it always reports "unsupported". Enable LTO directly.
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+# LTO turns malloc()+memset() into calloc() after the linker has already resolved archive
+# members, so the archive member defining calloc is never pulled in. Force it.
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-u,calloc")
+
+# CMake 4 ignores the toolchain's -Os defaults and builds RelWithDebInfo at -O2, which
+# with LTO inlines aggressively and grows the binary. Force size optimization.
+foreach(lang C CXX ASM)
+    set(CMAKE_${lang}_FLAGS_RELWITHDEBINFO "-Os -g -DNDEBUG")
+endforeach()
+
 
 ####################
 # optional JSON flags for compilation + assembly
